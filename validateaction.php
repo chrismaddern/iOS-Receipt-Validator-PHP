@@ -62,7 +62,7 @@
     $isSandbox = (bool) $_GET['sandbox'];
  
     try {
-         if(strpos($receipt,'{'))
+         if(strpos($receipt,'{') !== false)
 {
 $receipt = base64_encode($receipt);
 }
