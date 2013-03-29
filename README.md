@@ -1,4 +1,5 @@
-**In App Purchase Receipt Validator - PHP**
+In App Purchase Receipt Validator - PHP
+=======================================
 
 Host this on any box which is running PHP and has direct outbound web access and it will be able to validate iOS IAP receipts for you (Sandbox or Production environment configurable).
 
