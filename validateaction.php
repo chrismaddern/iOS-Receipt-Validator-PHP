@@ -28,7 +28,7 @@ function validateReceipt($receipt, $endpoint) {
     }
  
     if (!isset($data->status) || $data->status != 0) {
-        throw new Exception('Invalid receipt. Status code: ' . $data->status);
+        throw new Exception('Invalid receipt. Status code: ' . (!empty($data->status) ? $data->status : 'N/A'));
     }
 
     return array(
