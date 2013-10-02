@@ -1,23 +1,13 @@
 <?php
-function validateReceipt($receipt, $isSandbox = true) {
-
-    if ($isSandbox) {
-        $endpoint = 'https://sandbox.itunes.apple.com/verifyReceipt';
-        print "Environment: Sandbox (use 'sandbox' URL argument to toggle)<br />";
-    }
-    else {
-        $endpoint = 'https://buy.itunes.apple.com/verifyReceipt';
-        print "Environment: Production (use 'sandbox' URL argument to toggle)<br />";
-    }
+function validateReceipt($receipt, $endpoint) {
 
     $postData = json_encode(
         array('receipt-data' => $receipt)
     );
-       
 
     $ch = curl_init($endpoint);
-    curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
@@ -38,8 +28,7 @@ function validateReceipt($receipt, $isSandbox = true) {
     }
  
     if (!isset($data->status) || $data->status != 0) {
-        print 'Status Code: '. $data->status . '<br/>';
-        throw new Exception('Invalid receipt');
+        throw new Exception('Invalid receipt. Status code: ' . (!empty($data->status) ? $data->status : 'N/A'));
     }
 
     return array(
@@ -56,11 +45,20 @@ function validateReceipt($receipt, $isSandbox = true) {
 $receipt   = $_GET['receipt'];
 $isSandbox = (bool) $_GET['sandbox'];
  
+if ($isSandbox) {
+    $endpoint = 'https://sandbox.itunes.apple.com/verifyReceipt';
+    print "Environment: Sandbox (use 'sandbox' URL argument to toggle)<br />";
+}
+else {
+    $endpoint = 'https://buy.itunes.apple.com/verifyReceipt';
+    print "Environment: Production (use 'sandbox' URL argument to toggle)<br />";
+}
+
 try {
     if(strpos($receipt,'{') !== false) {
         $receipt = base64_encode($receipt);
     }
-    $info = validateReceipt($receipt, $isSandbox);
+    $info = validateReceipt($receipt, $endpoint);
     echo 'Success';
 }
 catch (Exception $ex) {
