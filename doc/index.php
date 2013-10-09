@@ -5,16 +5,16 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-    var urlToSend = 'validateaction.php?receipt=' + '<?php echo $_GET['receipt'] ?>';
+    var urlToSend = 'example.php?receipt=' + '<?php echo $_GET['receipt'] ?>';
     if(!('<?php echo $_GET['receipt'] ?>' == '')) {
         $.get(
             urlToSend,
             { language: "php", version: 5 },
-            function(responseText) {  
-                $("#retData").html('<br /><br /><br />'+responseText + '<br /><a href="index.php">Try another </a>');
-            },  
-            "html"  
-        );  
+            function(responseText) {
+                $("#retData").html('<br /><br /><br />' + responseText + '<br /><a href="index.php">Try another </a>');
+            },
+            "html"
+        );
     }
 </script>
 
