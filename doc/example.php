@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . '/../validateaction.php';
+include __DIR__ . '/../itunesReceiptValidator.php';
 
 if (isset($_GET['receipt'])) {
     $receipt  = $_GET['receipt'];
