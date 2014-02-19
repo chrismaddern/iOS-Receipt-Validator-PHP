@@ -45,15 +45,7 @@ class itunesReceiptValidator {
             throw new Exception('Invalid response data');
         }
 
-        return array(
-            'quantity'       =>  $decoded_response->receipt->quantity,
-            'product_id'     =>  $decoded_response->receipt->product_id,
-            'transaction_id' =>  $decoded_response->receipt->transaction_id,
-            'purchase_date'  =>  $decoded_response->receipt->purchase_date,
-            'app_item_id'    =>  $decoded_response->receipt->app_item_id,
-            'bid'            =>  $decoded_response->receipt->bid,
-            'bvrs'           =>  $decoded_response->receipt->bvrs
-        );
+		return $decoded_response->receipt;
     }
 
     private function encodeRequest() {
