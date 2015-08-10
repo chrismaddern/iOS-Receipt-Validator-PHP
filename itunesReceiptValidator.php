@@ -11,7 +11,7 @@ class itunesReceiptValidator {
             $this->setReceipt($receipt);
         }
         if ($password) {
-            $this->password;
+            $this->setPassword($password);
         }
     }
 
