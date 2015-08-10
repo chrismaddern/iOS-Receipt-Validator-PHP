@@ -1,4 +1,12 @@
 <?php
+
+
+// Custom exceptions
+abstract class itunesReceiptException extends Exception { }
+class itunesReceiptInvalidException extends itunesReceiptException { }
+class itunesReceiptMalformedException extends itunesReceiptException { }
+
+// itunes receipt validator
 class itunesReceiptValidator {
 
     const SANDBOX_URL    = 'https://sandbox.itunes.apple.com/verifyReceipt';
@@ -17,7 +25,7 @@ class itunesReceiptValidator {
     }
 
     function setReceipt($receipt) {
-        if (strpos($receipt, '{') !== false) {
+        if (is_string($receipt) && strpos($receipt, '{') !== false) {
             $this->receipt = base64_encode($receipt);
         } else {
             $this->receipt = $receipt;
@@ -38,7 +46,10 @@ class itunesReceiptValidator {
         $decoded_response = $this->decodeResponse($response);
 
         if (!isset($decoded_response->status) || $decoded_response->status != 0) {
-            throw new Exception('Invalid receipt. Status code: ' . (!empty($decoded_response->status) ? $decoded_response->status : 'N/A'));
+            throw new itunesReceiptInvalidException (
+                'Invalid receipt. Status code: ' . (!empty($decoded_response->status) ?
+                    $decoded_response->status : 'N/A')
+            );
         }
 
         if (!is_object($decoded_response)) {
