@@ -12,11 +12,14 @@ class itunesReceiptValidator {
     const SANDBOX_URL    = 'https://sandbox.itunes.apple.com/verifyReceipt';
     const PRODUCTION_URL = 'https://buy.itunes.apple.com/verifyReceipt';
 
-    function __construct($endpoint, $receipt = NULL) {
+    function __construct($endpoint, $receipt = NULL, $password = NULL) {
         $this->setEndPoint($endpoint);
 
         if ($receipt) {
             $this->setReceipt($receipt);
+        }
+        if ($password) {
+            $this->setPassword($password);
         }
     }
 
@@ -30,6 +33,14 @@ class itunesReceiptValidator {
         } else {
             $this->receipt = $receipt;
         }
+    }
+
+    function getPassword(){
+        return $this->password;
+    }
+
+    function setPassword($password){
+        $this->password = $password;
     }
 
     function getEndpoint() {
@@ -60,7 +71,13 @@ class itunesReceiptValidator {
     }
 
     private function encodeRequest() {
-        return json_encode(array('receipt-data' => $this->getReceipt()));
+        $request_data = array('receipt-data' => $this->getReceipt());
+
+        if ($this->getPassword()) {
+            $request_data['password'] = $this->getPassword();
+        }
+
+        return json_encode($request_data);
     }
 
     private function decodeResponse($response) {
