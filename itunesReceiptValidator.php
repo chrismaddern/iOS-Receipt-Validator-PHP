@@ -1,14 +1,25 @@
 <?php
+
+
+// Custom exceptions
+abstract class itunesReceiptException extends Exception { }
+class itunesReceiptInvalidException extends itunesReceiptException { }
+class itunesReceiptMalformedException extends itunesReceiptException { }
+
+// itunes receipt validator
 class itunesReceiptValidator {
 
     const SANDBOX_URL    = 'https://sandbox.itunes.apple.com/verifyReceipt';
     const PRODUCTION_URL = 'https://buy.itunes.apple.com/verifyReceipt';
 
-    function __construct($endpoint, $receipt = NULL) {
+    function __construct($endpoint, $receipt = NULL, $password = NULL) {
         $this->setEndPoint($endpoint);
 
         if ($receipt) {
             $this->setReceipt($receipt);
+        }
+        if ($password) {
+            $this->setPassword($password);
         }
     }
 
@@ -17,11 +28,19 @@ class itunesReceiptValidator {
     }
 
     function setReceipt($receipt) {
-        if (strpos($receipt, '{') !== false) {
+        if (is_string($receipt) && strpos($receipt, '{') !== false) {
             $this->receipt = base64_encode($receipt);
         } else {
             $this->receipt = $receipt;
         }
+    }
+
+    function getPassword(){
+        return $this->password;
+    }
+
+    function setPassword($password){
+        $this->password = $password;
     }
 
     function getEndpoint() {
@@ -32,24 +51,32 @@ class itunesReceiptValidator {
         $this->endpoint = $endpoint;
     }
 
-    function validateReceipt() {
+    function validateReceipt($returnAll = false) {
         $response = $this->makeRequest();
 
         $decoded_response = $this->decodeResponse($response);
 
         if (!isset($decoded_response->status) || $decoded_response->status != 0) {
-            throw new Exception('Invalid receipt. Status code: ' . (!empty($decoded_response->status) ? $decoded_response->status : 'N/A'));
+            throw new itunesReceiptInvalidException (
+                'Invalid receipt. Status code: ' . (!empty($decoded_response->status) ?
+                    $decoded_response->status : 'N/A')
+            );
         }
 
         if (!is_object($decoded_response)) {
             throw new Exception('Invalid response data');
         }
-
-		return $decoded_response->receipt;
+		return $returnAll?$decoded_response:$decoded_response->receipt;
     }
 
     private function encodeRequest() {
-        return json_encode(array('receipt-data' => $this->getReceipt()));
+        $request_data = array('receipt-data' => $this->getReceipt());
+
+        if ($this->getPassword()) {
+            $request_data['password'] = $this->getPassword();
+        }
+
+        return json_encode($request_data);
     }
 
     private function decodeResponse($response) {
