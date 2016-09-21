@@ -51,7 +51,7 @@ class itunesReceiptValidator {
         $this->endpoint = $endpoint;
     }
 
-    function validateReceipt() {
+    function validateReceipt($returnAll = false) {
         $response = $this->makeRequest();
 
         $decoded_response = $this->decodeResponse($response);
@@ -66,8 +66,7 @@ class itunesReceiptValidator {
         if (!is_object($decoded_response)) {
             throw new Exception('Invalid response data');
         }
-
-		return $decoded_response->receipt;
+		return $returnAll?$decoded_response:$decoded_response->receipt;
     }
 
     private function encodeRequest() {
